@@ -27,8 +27,8 @@ float last_temp, last_hum;
 
 void setup(void) {
   Serial.begin(115200);
-  pinMode(TFT_BL, OUTPUT);      // TTGO T-Display enable Backlight pin 4
-  digitalWrite(TFT_BL, HIGH);   // T-Display turn on Backlight
+  ledcAttachChannel(TFT_BL, 10000, 8, 0);
+  ledcWriteChannel(0, 128);
   tftSPI.begin(TFT_SCLK, -1, TFT_MOSI, TFT_CS);
   tft.init(135, 240);           // Initialize ST7789 240x135
   tft.setRotation(1);
@@ -42,6 +42,17 @@ void setup(void) {
 
 void dht_read(float * h_ptr, float * t_ptr) {
   Serial.println("Reading from DHT22 sensor");
+  uint16_t ambient_light = analogRead(12);
+  Serial.printf("Ambient light: %d\r\n", ambient_light);
+  if (ambient_light > 3500) {
+    ledcWriteChannel(0, 32);
+  } else if (ambient_light > 3000) {
+    ledcWriteChannel(0, 64);
+  } else if (ambient_light > 2500) {
+    ledcWriteChannel(0, 128);
+  } else {
+    ledcWriteChannel(0, 255);
+  }
   tft.drawRect(0, 0, 240, 135, ST77XX_CYAN);
   pinMode(DHTVCCPIN, OUTPUT);
   digitalWrite(DHTVCCPIN, HIGH);
