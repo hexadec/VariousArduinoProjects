@@ -42,13 +42,15 @@ void setup(void) {
 
 void dht_read(float * h_ptr, float * t_ptr) {
   Serial.println("Reading from DHT22 sensor");
-  uint16_t ambient_light = analogRead(12);
+  uint16_t ambient_light = analogRead(15);
   Serial.printf("Ambient light: %d\r\n", ambient_light);
-  if (ambient_light > 3500) {
+  if (ambient_light > 4000) {
+    ledcWriteChannel(0, 16);
+  } else if (ambient_light > 3800) {
     ledcWriteChannel(0, 32);
-  } else if (ambient_light > 3000) {
+  } else if (ambient_light > 3200) {
     ledcWriteChannel(0, 64);
-  } else if (ambient_light > 2500) {
+  } else if (ambient_light > 2700) {
     ledcWriteChannel(0, 128);
   } else {
     ledcWriteChannel(0, 255);
